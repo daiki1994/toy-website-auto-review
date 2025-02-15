@@ -9,7 +9,7 @@ permissions:
 
 env:
   resourceGroupName: pr_${{ github.event.number }}
-  resourceGroupLocation: japanwest
+  resourceGroupLocation: westus3
 
 jobs:
   lint:
