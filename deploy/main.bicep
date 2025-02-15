@@ -1,5 +1,5 @@
 @description('The location into which your Azure resources should be deployed.')
-param location string = resourceGroup().location
+param location string = 'japanwest'
 
 @description('Select the type of environment you want to provision. Allowed values are Production and Test.')
 @allowed([
@@ -16,6 +16,8 @@ param resourceNameSuffix string = uniqueString(resourceGroup().id)
 var appServiceAppName = 'toy-website-${resourceNameSuffix}'
 var appServicePlanName = 'toy-website'
 var storageAccountName = 'mystorage${resourceNameSuffix}'
+
+var appServiceAppLinuxFrameworkVersion = 'node|14-lts'
 
 // Define the SKUs for each component based on the environment type.
 var environmentConfigurationMap = {
@@ -50,6 +52,10 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: appServicePlanName
   location: location
   sku: environmentConfigurationMap[environmentType].appServicePlan.sku
+  kind: 'linux'
+  properties: {
+    reserved: true
+  }
 }
 
 resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
@@ -58,6 +64,9 @@ resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'node|14-lts'
+    }
   }
 }
 
